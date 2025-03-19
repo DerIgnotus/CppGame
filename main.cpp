@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "texture.h"
 #include "shaderClass.h"
 #include "VBO.h"
@@ -21,13 +24,14 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Triangle vertices
-	GLfloat	vertices[] =
+	GLfloat vertices[] = 
 	{
-		-0.5f, -0.5f, 0.0f, 	1.0f, 0.0f, 0.0f,	0.0f, 0.0f,	// Lower left corner
-		-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,	// Upper left corner
-		 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,	// Upper right corner
-		 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	1.0f, 0.0f,	// Lower right corner
+		100.0f, 100.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,  // Bottom-left
+		100.0f, 300.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,  // Top-left
+		300.0f, 300.0f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,  // Top-right
+		300.0f, 100.0f, 0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f   // Bottom-right
 	};
+
 
 	GLuint indices[] =
 	{
@@ -57,6 +61,13 @@ int main()
 
 	// Create Shaderprogram
 	Shader shaderProgram("default.vert", "default.frag");
+	shaderProgram.Activate();
+
+	// Correct View
+	glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f, -1.0f, 1.0f);
+	GLuint projLoc = glGetUniformLocation(shaderProgram.ID, "projection");
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
 
 	// Create and bind VAO and VBO and EBO
 	VAO VAO1;
